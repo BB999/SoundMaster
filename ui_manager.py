@@ -43,6 +43,8 @@ class UIManager:
             if self._current_window is not None and self._current_window.winfo_exists():
                 self._current_window.percent_label.config(text=f"{volume_level}%", fg=accent_color)
                 self._current_window.icon_label.config(text="🔊", fg=accent_color)
+                if hasattr(self._current_window, 'bar'):
+                    self._current_window.bar['value'] = volume_level
                 if self._close_timer is not None:
                     self._current_window.after_cancel(self._close_timer)
                 self._close_timer = self._current_window.after(700, close_and_reset)
@@ -53,7 +55,7 @@ class UIManager:
                 win.attributes('-topmost', True)
                 win.attributes('-alpha', 0.85)
                 window_width = 220
-                window_height = 150
+                window_height = 180
                 screen_width = win.winfo_screenwidth()
                 screen_height = win.winfo_screenheight()
                 x = (screen_width - window_width) // 2
@@ -70,8 +72,15 @@ class UIManager:
                     bg=bg_color
                 )
                 percent_label.place(relx=0.5, rely=0.62, anchor='center')
+                style = ttk.Style(win)
+                style.theme_use('clam')
+                style.configure("Custom.Horizontal.TProgressbar", troughcolor=bg_color, bordercolor=bg_color, background=accent_color, lightcolor=accent_color, darkcolor=accent_color, thickness=12)
+                bar = ttk.Progressbar(win, orient="horizontal", length=160, mode="determinate", maximum=100, style="Custom.Horizontal.TProgressbar")
+                bar.place(relx=0.5, rely=0.85, anchor='center')
+                bar['value'] = volume_level
                 win.percent_label = percent_label
                 win.icon_label = icon_label
+                win.bar = bar
                 self._close_timer = win.after(700, close_and_reset)
                 win.protocol("WM_DELETE_WINDOW", close_and_reset)
                 self._current_window = win
