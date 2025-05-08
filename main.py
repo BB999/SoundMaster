@@ -21,8 +21,8 @@ class VolumeControlApp:
         
     def setup_hotkeys(self):
         log("⌨️ ホットキーを設定中...")
-        self.hotkey_manager.register_hotkey('F23', self.volume_up)
-        self.hotkey_manager.register_hotkey('F24', self.volume_down)
+        self.hotkey_manager.register_hotkey('F23', self.volume_down)
+        self.hotkey_manager.register_hotkey('F24', self.volume_up)
         self.hotkey_manager.start()
         log("✅ ホットキーの設定が完了しました")
         

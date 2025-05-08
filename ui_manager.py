@@ -30,24 +30,29 @@ class UIManager:
     def _display_notification(self, volume_level: int):
         def show():
             root = tk.Tk()
-            root.overrideredirect(True)  # 枠なし
+            root.overrideredirect(True)
             root.attributes('-topmost', True)
-            root.attributes('-alpha', 0.9)
-            # 画面中央に表示
+            root.attributes('-alpha', 0.97)
+            # Mac風ダーク背景
+            bg_color = '#232323'
+            accent_color = '#4cd964'
             screen_width = root.winfo_screenwidth()
             screen_height = root.winfo_screenheight()
-            window_width = 300
-            window_height = 80
+            window_width = 220
+            window_height = 110
             x = (screen_width - window_width) // 2
             y = (screen_height - window_height) // 2
             root.geometry(f"{window_width}x{window_height}+{x}+{y}")
-            bar = ttk.Progressbar(root, orient="horizontal", length=250, mode="determinate", maximum=100)
-            bar.pack(pady=(15, 5), padx=20)
-            bar['value'] = volume_level
-            # 音量％ラベル
-            percent_label = tk.Label(root, text=f"{volume_level}%", font=("Arial", 14), bg="#f0f0f0")
-            percent_label.pack(pady=(0, 10))
-            # 1秒後に自動で閉じる
+            root.configure(bg=bg_color)
+            # 音量％のみを大きく中央に表示
+            percent_label = tk.Label(
+                root,
+                text=f"{volume_level}%",
+                font=("Segoe UI", 48, "bold"),
+                fg=accent_color,
+                bg=bg_color
+            )
+            percent_label.place(relx=0.5, rely=0.5, anchor='center')
             root.after(1000, root.destroy)
             root.mainloop()
         threading.Thread(target=show, daemon=True).start()
