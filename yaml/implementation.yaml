@@ -1,0 +1,136 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+
+const Implementation: React.FC = () => {
+  return (
+    <div className="p-4 bg-[#ffffff] dark:bg-[#1f2937]">
+      <Card className="w-[800px] mx-auto bg-[#ffffff] dark:bg-[#1f2937]">
+        <CardHeader>
+          <CardTitle className="text-center text-[#000000] dark:text-[#ffffff]">実装手順</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <section>
+              <h3 className="font-bold mb-2 text-[#000000] dark:text-[#ffffff]">1. 環境セットアップ</h3>
+              <ul className="list-disc pl-6 space-y-2 text-[#000000] dark:text-[#ffffff]">
+                <li>Python 3.8以上のインストール</li>
+                <li>必要なライブラリのインストール:
+                  <ul className="list-disc pl-6 mt-1">
+                    <li>pynput</li>
+                    <li>pycaw</li>
+                    <li>comtypes</li>
+                    <li>pystray</li>
+                    <li>PySimpleGUI</li>
+                    <li>Pillow</li>
+                  </ul>
+                </li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="font-bold mb-2 text-[#000000] dark:text-[#ffffff]">2. モジュール実装</h3>
+              <ul className="list-disc pl-6 space-y-2 text-[#000000] dark:text-[#ffffff]">
+                <li>volume_control.py:
+                  <ul className="list-disc pl-6 mt-1">
+                    <li>Windows Core Audio APIを使用した音量制御</li>
+                    <li>音量の取得と設定</li>
+                    <li>ミュート機能</li>
+                    <li>デバッグログ出力</li>
+                  </ul>
+                </li>
+                <li>hotkey_manager.py:
+                  <ul className="list-disc pl-6 mt-1">
+                    <li>グローバルキーボードリスナー</li>
+                    <li>F23/F24キーの検出</li>
+                    <li>キー名と仮想キーコードの両方での判定</li>
+                    <li>デバッグログ出力</li>
+                  </ul>
+                </li>
+                <li>ui_manager.py:
+                  <ul className="list-disc pl-6 mt-1">
+                    <li>システムトレイアイコン</li>
+                    <li>音量変更通知</li>
+                    <li>エラーハンドリング</li>
+                    <li>デバッグログ出力</li>
+                  </ul>
+                </li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="font-bold mb-2 text-[#000000] dark:text-[#ffffff]">3. テスト手順</h3>
+              <ul className="list-disc pl-6 space-y-2 text-[#000000] dark:text-[#ffffff]">
+                <li>キー検出の確認:
+                  <ul className="list-disc pl-6 mt-1">
+                    <li>F23キーで音量アップ</li>
+                    <li>F24キーで音量ダウン</li>
+                  </ul>
+                </li>
+                <li>音量変更の確認:
+                  <ul className="list-disc pl-6 mt-1">
+                    <li>2%ずつの増減</li>
+                    <li>0-100%の範囲内での動作</li>
+                  </ul>
+                </li>
+                <li>通知表示の確認:
+                  <ul className="list-disc pl-6 mt-1">
+                    <li>音量変更時の通知</li>
+                    <li>エラー時の通知</li>
+                  </ul>
+                </li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="font-bold mb-2 text-[#000000] dark:text-[#ffffff]">4. デバッグ手順</h3>
+              <ul className="list-disc pl-6 space-y-2 text-[#000000] dark:text-[#ffffff]">
+                <li>ログの確認:
+                  <ul className="list-disc pl-6 mt-1">
+                    <li>キー検出ログ</li>
+                    <li>音量変更ログ</li>
+                    <li>エラーログ</li>
+                  </ul>
+                </li>
+                <li>エラー対応:
+                  <ul className="list-disc pl-6 mt-1">
+                    <li>キー検出エラー</li>
+                    <li>音量制御エラー</li>
+                    <li>通知表示エラー</li>
+                  </ul>
+                </li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="font-bold mb-2 text-[#000000] dark:text-[#ffffff]">5. 配布準備</h3>
+              <ul className="list-disc pl-6 space-y-2 text-[#000000] dark:text-[#ffffff]">
+                <li>実行ファイルの作成</li>
+                <li>リソースファイルの同梱</li>
+                <li>インストーラーの作成</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="font-bold mb-2 text-[#000000] dark:text-[#ffffff]">6. 追加機能実装オプション</h3>
+              <ul className="list-disc pl-6 space-y-2 text-[#000000] dark:text-[#ffffff]">
+                <li>音量変更のステップサイズカスタマイズ</li>
+                <li>カスタムホットキー設定</li>
+                <li>システム起動時の自動起動設定UI</li>
+                <li>ミュートトグル機能の追加</li>
+                <li>ログファイル出力機能:
+                  <ul className="list-disc pl-6 mt-1">
+                    <li>ログローテーション</li>
+                    <li>ログレベル設定</li>
+                    <li>ログファイルの圧縮</li>
+                  </ul>
+                </li>
+              </ul>
+            </section>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default Implementation;
