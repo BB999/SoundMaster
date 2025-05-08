@@ -49,7 +49,9 @@ const Implementation: React.FC = () => {
                 <li>ui_manager.py:
                   <ul className="list-disc pl-6 mt-1">
                     <li>システムトレイアイコン</li>
-                    <li>音量変更通知</li>
+                    <li>音量変更通知（Tkinter常駐スレッド＋Queue方式で実装）</li>
+                    <li>ウィンドウ再利用によるちらつき防止</li>
+                    <li>スピーカー・％表示の色カスタマイズ（白色）</li>
                     <li>エラーハンドリング</li>
                     <li>デバッグログ出力</li>
                   </ul>
