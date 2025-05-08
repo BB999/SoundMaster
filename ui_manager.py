@@ -22,6 +22,8 @@ class UIManager:
         )
         self.tray = pystray.Icon('volume_control', self.icon, '音量コントロール', self.menu)
         threading.Thread(target=self.tray.run, daemon=True).start()
+        self._current_window = None
+        self._window_lock = threading.Lock()
 
     def show_volume_notification(self, volume_level: int, is_up: bool):
         # tkinterで通知バーを表示
@@ -29,31 +31,51 @@ class UIManager:
 
     def _display_notification(self, volume_level: int):
         def show():
-            root = tk.Tk()
-            root.overrideredirect(True)
-            root.attributes('-topmost', True)
-            root.attributes('-alpha', 0.97)
-            # Mac風ダーク背景
-            bg_color = '#232323'
-            accent_color = '#4cd964'
-            screen_width = root.winfo_screenwidth()
-            screen_height = root.winfo_screenheight()
-            window_width = 220
-            window_height = 110
-            x = (screen_width - window_width) // 2
-            y = (screen_height - window_height) // 2
-            root.geometry(f"{window_width}x{window_height}+{x}+{y}")
-            root.configure(bg=bg_color)
-            # 音量％のみを大きく中央に表示
-            percent_label = tk.Label(
-                root,
-                text=f"{volume_level}%",
-                font=("Segoe UI", 48, "bold"),
-                fg=accent_color,
-                bg=bg_color
-            )
-            percent_label.place(relx=0.5, rely=0.5, anchor='center')
-            root.after(1000, root.destroy)
+            def close_and_reset(win):
+                with self._window_lock:
+                    if self._current_window == win:
+                        self._current_window = None
+                    win.destroy()
+            with self._window_lock:
+                if self._current_window is not None and self._current_window.winfo_exists():
+                    try:
+                        self._current_window.percent_label.config(text=f"{volume_level}%")
+                        self._current_window.icon_label.config(text="🔊")
+                        if hasattr(self._current_window, 'close_timer') and self._current_window.close_timer is not None:
+                            self._current_window.after_cancel(self._current_window.close_timer)
+                        self._current_window.close_timer = self._current_window.after(700, lambda win=self._current_window: close_and_reset(win))
+                    except Exception:
+                        pass
+                    return
+                root = tk.Tk()
+                root.overrideredirect(True)
+                root.attributes('-topmost', True)
+                root.attributes('-alpha', 0.85)
+                bg_color = '#232323'
+                accent_color = '#4cd964'
+                screen_width = root.winfo_screenwidth()
+                screen_height = root.winfo_screenheight()
+                window_width = 220
+                window_height = 150
+                x = (screen_width - window_width) // 2
+                y = (screen_height - window_height) // 2
+                root.geometry(f"{window_width}x{window_height}+{x}+{y}")
+                root.configure(bg=bg_color)
+                icon_label = tk.Label(root, text="🔊", font=("Segoe UI Emoji", 40), fg=accent_color, bg=bg_color)
+                icon_label.place(relx=0.5, rely=0.18, anchor='center')
+                percent_label = tk.Label(
+                    root,
+                    text=f"{volume_level}%",
+                    font=("Segoe UI", 44, "bold"),
+                    fg=accent_color,
+                    bg=bg_color
+                )
+                percent_label.place(relx=0.5, rely=0.62, anchor='center')
+                root.percent_label = percent_label
+                root.icon_label = icon_label
+                root.close_timer = root.after(700, lambda win=root: close_and_reset(win))
+                root.protocol("WM_DELETE_WINDOW", lambda win=root: close_and_reset(win))
+                self._current_window = root
             root.mainloop()
         threading.Thread(target=show, daemon=True).start()
 
