@@ -7,15 +7,23 @@ from volume_control import VolumeControl
 import tkinter as tk
 from tkinter import ttk
 from queue import Queue, Empty
+from settings_window import SettingsWindow
 
 class UIManager:
-    def __init__(self, volume_control: VolumeControl):
+    def __init__(self, volume_control: VolumeControl, parent_app=None):
         self.volume_control = volume_control
+        self.parent_app = parent_app
         self.is_running = True
         base_path = os.path.dirname(os.path.abspath(__file__))
-        self.icon_path = os.path.join(base_path, 'resources', 'app_icon.png')
+        self.icon_path = os.path.join(base_path, 'resources', 'app_icon.ico')
         self.icon = Image.open(self.icon_path)
+
+        # 設定ウィンドウのインスタンス
+        self.settings_window = SettingsWindow(parent_app)
+
         self.menu = pystray.Menu(
+            pystray.MenuItem('設定', self.open_settings),
+            pystray.Menu.SEPARATOR,
             pystray.MenuItem('終了', self.stop)
         )
         self.tray = pystray.Icon('volume_control', self.icon, '音量コントロール', self.menu)
@@ -94,6 +102,10 @@ class UIManager:
             root.after(50, poll_queue)
         poll_queue()
         root.mainloop()
+
+    def open_settings(self):
+        """設定ウィンドウを開く"""
+        self.settings_window.show()
 
     def stop(self):
         self.is_running = False
