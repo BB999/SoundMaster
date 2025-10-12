@@ -20,7 +20,7 @@ class VolumeControlApp:
     def __init__(self):
         log("🚀 アプリケーションを初期化中...")
         self.volume_control = VolumeControl()
-        self.ui_manager = UIManager(self.volume_control)
+        self.ui_manager = UIManager(self.volume_control, parent_app=self)
         self.hotkey_manager = HotkeyManager()
         
         self.setup_hotkeys()
