@@ -4,6 +4,14 @@ from volume_control import VolumeControl
 from hotkey_manager import HotkeyManager
 from ui_manager import UIManager
 import time
+import os
+
+# Windows環境で絵文字を表示するためのエンコーディング設定
+if sys.platform == 'win32':
+    import codecs
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
+    os.system('chcp 65001 > nul')
 
 def log(message):
     print(f"🔍 {message}")
@@ -65,6 +73,7 @@ class VolumeControlApp:
         log("🛑 アプリケーションを終了します")
         self.hotkey_manager.stop()
         self.ui_manager.close()
+        self.volume_control.cleanup()
         sys.exit(0)
 
 if __name__ == '__main__':

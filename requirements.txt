@@ -1,11 +1,11 @@
 # 依存ライブラリリスト
 # 音量制御関連
-pycaw==20230119
-comtypes==1.1.14
+pycaw==20240210
+comtypes==1.4.1
 
 # キーボード入力検出関連
 pynput==1.7.6
 
-# UI関連
-PySimpleGUI==4.60.4
-Pillow==9.5.0  # 画像処理用
+# UI関連（Tkinterは標準ライブラリなので不要）
+Pillow>=10.0.0  # 画像処理用（pystray用）
+pystray>=0.19.0  # システムトレイアイコン
