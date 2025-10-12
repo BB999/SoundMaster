@@ -13,7 +13,7 @@ class UIManager:
         self.volume_control = volume_control
         self.is_running = True
         base_path = os.path.dirname(os.path.abspath(__file__))
-        self.icon_path = os.path.join(base_path, 'resources', 'app_icon.png')
+        self.icon_path = os.path.join(base_path, 'resources', 'app_icon.ico')
         self.icon = Image.open(self.icon_path)
         self.menu = pystray.Menu(
             pystray.MenuItem('終了', self.stop)
