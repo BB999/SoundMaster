@@ -195,6 +195,118 @@ class VolumeControl:
             except Exception as e:
                 log(f"❌ ミュート設定エラー: {e}")
 
+    def get_audio_devices(self):
+        """利用可能な音声出力デバイスの一覧を取得する
+
+        Returns:
+            list: デバイス情報のリスト [{"id": device_id, "name": device_name, "is_default": bool}, ...]
+        """
+        devices = []
+        try:
+            from comtypes import CoCreateInstance, GUID
+            from pycaw.pycaw import EDataFlow, ERole, DEVICE_STATE
+
+            # CLSID_MMDeviceEnumeratorを直接定義
+            CLSID_MMDeviceEnumerator = GUID('{BCDE0395-E52F-467C-8E3D-C4579291692E}')
+
+            # デバイス列挙子を取得
+            device_enum = CoCreateInstance(
+                CLSID_MMDeviceEnumerator,
+                IMMDeviceEnumerator,
+                CLSCTX_ALL
+            )
+
+            # デフォルトデバイスを取得
+            default_device = device_enum.GetDefaultAudioEndpoint(EDataFlow.eRender.value, ERole.eMultimedia.value)
+            default_device_id = default_device.GetId()
+
+            # すべてのアクティブな再生デバイスを列挙
+            collection = device_enum.EnumAudioEndpoints(EDataFlow.eRender.value, DEVICE_STATE.ACTIVE.value)
+            count = collection.GetCount()
+
+            for i in range(count):
+                device = collection.Item(i)
+                device_id = device.GetId()
+
+                # デバイス名を取得
+                from pycaw.pycaw import IPropertyStore
+                from comtypes import GUID
+                import ctypes
+
+                prop_store = device.OpenPropertyStore(0)  # STGM_READ
+
+                # PKEY_Device_FriendlyName
+                PKEY_Device_FriendlyName = (GUID('{a45c254e-df1c-4efd-8020-67d146a850e0}'), 14)
+
+                try:
+                    prop_value = prop_store.GetValue(PKEY_Device_FriendlyName)
+                    device_name = prop_value.value if hasattr(prop_value, 'value') else str(prop_value)
+                except:
+                    device_name = f"オーディオデバイス {i+1}"
+
+                is_default = (device_id == default_device_id)
+
+                devices.append({
+                    "id": device_id,
+                    "name": device_name,
+                    "is_default": is_default
+                })
+
+                log(f"{'🔊' if is_default else '🔈'} デバイス検出: {device_name}")
+
+            log(f"✅ {len(devices)}個のオーディオデバイスが見つかりました")
+
+        except Exception as e:
+            log(f"❌ デバイス一覧取得エラー: {e}")
+            # エラーが発生した場合は、少なくとも現在のデフォルトデバイスを返す
+            try:
+                default_device = AudioUtilities.GetSpeakers()
+                devices.append({
+                    "id": "default",
+                    "name": "デフォルトデバイス",
+                    "is_default": True
+                })
+            except:
+                pass
+
+        return devices
+
+    def set_audio_device(self, device_id):
+        """指定されたIDのオーディオデバイスに切り替える
+
+        Args:
+            device_id: 切り替え先のデバイスID
+        """
+        with self._lock:
+            try:
+                from comtypes import CoCreateInstance, GUID
+                from pycaw.pycaw import EDataFlow, ERole
+
+                log(f"🔄 オーディオデバイスを切り替えています: {device_id}")
+
+                # CLSID_MMDeviceEnumeratorを直接定義
+                CLSID_MMDeviceEnumerator = GUID('{BCDE0395-E52F-467C-8E3D-C4579291692E}')
+
+                # デバイス列挙子を取得
+                device_enum = CoCreateInstance(
+                    CLSID_MMDeviceEnumerator,
+                    IMMDeviceEnumerator,
+                    CLSCTX_ALL
+                )
+
+                # 指定されたIDのデバイスを取得
+                device = device_enum.GetDevice(device_id)
+
+                # デバイスのインターフェースを取得
+                interface = device.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+                self.volume = cast(interface, POINTER(IAudioEndpointVolume))
+
+                log("✅ オーディオデバイスの切り替えが完了しました")
+            except Exception as e:
+                log(f"❌ デバイス切り替えエラー: {e}")
+                # エラーが発生した場合はデフォルトデバイスに戻す
+                self._initialize_device()
+
     def cleanup(self):
         """クリーンアップ処理"""
         try:

@@ -3,6 +3,7 @@ import signal
 from volume_control import VolumeControl
 from hotkey_manager import HotkeyManager
 from ui_manager import UIManager
+from config_manager import ConfigManager
 import time
 import os
 
@@ -19,10 +20,17 @@ def log(message):
 class VolumeControlApp:
     def __init__(self):
         log("🚀 アプリケーションを初期化中...")
+        self.config_manager = ConfigManager()
         self.volume_control = VolumeControl()
         self.ui_manager = UIManager(self.volume_control, parent_app=self)
         self.hotkey_manager = HotkeyManager()
-        
+
+        # 保存された音声デバイス設定を適用
+        saved_device_id = self.config_manager.get("selected_device_id")
+        if saved_device_id:
+            log(f"💾 保存された音声デバイス設定を適用します: {saved_device_id}")
+            self.volume_control.set_audio_device(saved_device_id)
+
         self.setup_hotkeys()
         self.setup_signal_handlers()
         log("✅ アプリケーションの初期化が完了しました")
